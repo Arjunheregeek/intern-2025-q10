@@ -1,175 +1,98 @@
-# CLI Chatbot with Intelligent LRU Caching
+# A/B Testing System for Prompt Optimization
 
-An interactive command-line chatbot with intelligent caching using LRU (Least Recently Used) algorithm and TTL (Time To Live) to reduce duplicate LLM API calls and improve response times.
+An automated evaluation system to compare two different prompt strategies using statistical analysis and performance metrics.
 
-## Features
+## Overview
 
-- 🧠 **LRU Cache with TTL**: 50 entries maximum, 5-minute expiration
-- ⚡ **Performance Optimization**: Instant responses for cached prompts
-- 📊 **Cache Analytics**: Hit/miss ratios, time savings, performance metrics
-- 🔄 **Automatic Cleanup**: Expired entry removal and memory management
-- 💾 **Smart Key Generation**: Hash-based keys for consistent caching
+This system tests 10 diverse user queries against two different system prompts (A vs B) to determine which performs better for different query types.
 
-## License
+## Project Structure
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```
+d:\Downloads\ASSIGN\
+├── data/
+│   └── evaluation_queries.csv    # 10 test queries with metadata
+├── src/
+│   ├── system_prompts.py        # Two prompt strategies
+│   └── ab_test_runner.py        # Automated evaluation
+├── notebooks/
+│   └── analysis.ipynb          # Statistical analysis & visualizations
+├── results/
+│   └── results.csv             # Evaluation results (generated)
+├── main.py                     # Simple entry point - runs evaluation
+├── requirements.txt            # Dependencies
+└── README.md                  # This file
+```
 
 ## Installation
 
 ```bash
-# Install dependencies
 pip install -r requirements.txt
-
-# Set up environment
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
 ```
 
 ## Usage
 
+### Quick Start
 ```bash
+# Run the evaluation directly
 python main.py
 ```
 
-## CLI Commands
-
-| Command | Description |
-|---------|-------------|
-| `quit` or `exit` | End the conversation |
-| `cache` | Show detailed cache statistics |
-| `clear` | Clear all cached entries |
-| `demo` | Demonstrate cache behavior with duplicate prompts |
-
-## Example Session
-
-```
-🤖 INTELLIGENT CACHED CHATBOT
-============================================================
-Features: LRU Cache (50 entries) + 5-minute TTL
-
-[Cache: 0/50] You: What is Python?
-🔄 [FRESH in 1247.3ms] 
-🤖 AI: Python is a high-level programming language...
-
-[Cache: 1/50] You: What is Python?
-⚡ [CACHED in 2.1ms] 
-🤖 AI: Python is a high-level programming language...
-
-[Cache: 1/50] You: cache
-📊 Cache Statistics:
-  • Cache hits: 1
-  • Cache misses: 1
-  • Hit rate: 50.0%
-  • Cache size: 1/50
-  • Time saved: 1.2s total
-  • Avg time saved per hit: 1247.3ms
-```
-
-## Caching Strategy
-
-### LRU Algorithm with TTL
-- **Cache Size**: 50 entries maximum
-- **TTL**: 5 minutes (300 seconds)
-- **Eviction**: Least Recently Used entries removed when full
-- **Key Generation**: SHA-256 hash of prompt + parameters
-
-### Performance Benefits
-1. **Instant Responses**: Cached prompts return in ~2ms vs ~1200ms fresh
-2. **API Cost Reduction**: Eliminates duplicate API calls
-3. **Bandwidth Savings**: Reduces network requests
-4. **User Experience**: Faster responses for repeated queries
-
-## Cache Implementation
-
-### Key Generation
-```python
-def get_cache_key(self, prompt: str, **kwargs) -> str:
-    # SHA-256 hash of prompt + sorted parameters
-    cache_data = f"{prompt}|{sorted_params}"
-    return hashlib.sha256(cache_data.encode()).hexdigest()[:16]
-```
-
-### Cache Entry Structure
-```python
-{
-    "response": "LLM response text",
-    "cached_at": 1640995200.0,
-    "original_latency_ms": 1247.3,
-    "cache_key": "a1b2c3d4e5f6g7h8"
-}
-```
-
-## Architecture
-
-```
-src/
-├── services/
-│   ├── cache_manager.py    # LRU cache with TTL implementation
-│   ├── chatbot.py         # Cached chatbot interface
-│   └── api_client.py      # Gemini API client
-tests/
-├── test_cache.py          # Cache functionality tests
-main.py                    # Entry point
-```
-
-## Performance Metrics
-
-### Cache Statistics
-- **Hit Rate**: Percentage of requests served from cache
-- **Response Time**: Fresh vs cached comparison
-- **Memory Usage**: Current cache size and capacity
-- **Time Savings**: Total milliseconds saved by caching
-
-### Cache States
-| State | Description | Behavior |
-|-------|-------------|----------|
-| **Empty** | 0/50 entries | All requests fresh, building cache |
-| **Building** | 1-49/50 | Mix of fresh and cached responses |
-| **Full** | 50/50 | LRU eviction on new unique prompts |
-| **Expired** | TTL exceeded | Automatic cleanup on access |
-
-## Testing
-
+### Manual Usage
 ```bash
-# Run cache tests
-pytest tests/test_cache.py -v
+# Run A/B test evaluation manually
+cd src
+python ab_test_runner.py
 
-# Test TTL expiration
-pytest tests/test_cache.py::TestLLMCache::test_ttl_expiration -v
-
-# Test LRU eviction
-pytest tests/test_cache.py::TestLLMCache::test_lru_eviction -v
+# View results in Jupyter notebook
+cd notebooks
+jupyter notebook analysis.ipynb
 ```
 
-## Cache Demo
+## What main.py does
 
-The `demo` command shows caching in action:
+The `main.py` file is a simple entry point that:
+1. Runs the A/B test evaluation automatically
+2. Displays results or error messages
+3. No menus or extra options - just executes the evaluation
 
-```bash
-[Cache: 0/50] You: demo
+## Evaluation Metrics
 
-🚀 Cache Demo - Testing duplicate prompts...
+- **Quality Score**: Manual rating (1-5 scale)
+- **Latency**: Response time in milliseconds
+- **Statistical Significance**: T-test comparisons
+- **Category Performance**: Breakdown by query type
 
---- Demo Request 1: 'What is Python?' ---
-🔄 [FRESH in 1247.3ms] 
-Response: Python is a high-level programming language...
+## Key Findings
 
---- Demo Request 2: 'Tell me about AI' ---
-🔄 [FRESH in 1156.7ms] 
-Response: AI (Artificial Intelligence) refers to...
+Results show statistical significance in performance differences between prompts, with each excelling in predicted areas. See `analysis.ipynb` for detailed findings.
 
---- Demo Request 3: 'What is Python?' ---
-⚡ [CACHED in 2.1ms] 
-Response: Python is a high-level programming language...
+## File Descriptions
 
-📊 Cache Statistics:
-  • Hit rate: 33.3%
-  • Time saved: 1.2s total
-```
+### evaluation_queries.csv
+10 diverse queries (5 favoring each prompt type) with categories and expected difficulty levels.
 
-## Error Handling
+### system_prompts.py
+Implementation of both prompt strategies with clear documentation of differences.
 
-- **Cache Failures**: Graceful fallback to fresh API calls
-- **TTL Expiration**: Automatic refresh of stale entries
-- **Memory Management**: LRU eviction prevents memory overflow
-- **Thread Safety**: Concurrent access protection with locks
+### ab_test_runner.py
+Automated system that runs all queries against both prompts and measures performance.
+
+### analysis.ipynb
+Jupyter notebook with:
+- Statistical comparisons (t-tests)
+- Visualizations (box plots, scatter plots)
+- Performance recommendations
+- Category-wise analysis
+
+### results.csv
+Complete evaluation results including:
+- Query text and metadata
+- Prompt version (A/B)
+- Response quality scores
+- Latency measurements
+- Timestamps
+- Timestamps
+- Response quality scores
+- Latency measurements
+- Timestamps

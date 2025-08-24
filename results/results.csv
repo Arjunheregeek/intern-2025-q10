@@ -1,0 +1,21 @@
+query,prompt_version,response,score,latency_ms,timestamp,category,expected_difficulty,favors_prompt
+What is the capital of France?,A,"Brief, direct answer to your question.",4,440.0,2025-08-24T18:55:35.930059,factual,easy,A
+What is the capital of France?,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",2,1440.0,2025-08-24T18:55:35.940474,factual,easy,A
+Define machine learning in one sentence,A,Machine learning is AI that learns from data to make predictions.,4,671.9999999999999,2025-08-24T18:55:35.950877,technical,easy,A
+Define machine learning in one sentence,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",2,1272.0,2025-08-24T18:55:35.961191,technical,easy,A
+Give me Python syntax for a for loop,A,"Brief, direct answer to your question.",4,321.0,2025-08-24T18:55:35.971845,programming,easy,A
+Give me Python syntax for a for loop,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",2,1021.0000000000001,2025-08-24T18:55:35.982139,programming,easy,A
+List 3 benefits of exercise,A,1. Improves health 2. Boosts mood 3. Increases energy,4,321.0,2025-08-24T18:55:35.992792,health,easy,A
+List 3 benefits of exercise,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",2,1221.0,2025-08-24T18:55:36.003062,health,easy,A
+What time zone is New York in?,A,"Brief, direct answer to your question.",4,648.0,2025-08-24T18:55:36.013599,factual,easy,A
+What time zone is New York in?,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",3,1248.0,2025-08-24T18:55:36.024019,factual,easy,A
+Explain quantum computing and its potential applications in detail,A,"Brief, direct answer to your question.",2,347.0,2025-08-24T18:55:36.034910,science,hard,B
+Explain quantum computing and its potential applications in detail,B,Quantum computing harnesses quantum mechanical phenomena like superposition and entanglement to process information exponentially faster than classical computers for certain problems.,4,847.0000000000001,2025-08-24T18:55:36.045322,science,hard,B
+Write a creative story about a time traveler who gets stuck,A,"Brief, direct answer to your question.",3,447.0,2025-08-24T18:55:36.056033,creative,medium,B
+Write a creative story about a time traveler who gets stuck,B,"Dr. Sarah Chen activated her temporal device but materialized in 1885 instead of 2025. The device was damaged, and she must rebuild it using 19th-century materials while avoiding paradoxes.",4,1347.0,2025-08-24T18:55:36.066592,creative,medium,B
+Analyze the pros and cons of remote work with examples,A,"Brief, direct answer to your question.",3,201.0,2025-08-24T18:55:36.077351,business,medium,B
+Analyze the pros and cons of remote work with examples,B,Remote work offers flexibility and eliminates commuting but presents challenges like isolation and communication difficulties. Success requires discipline and clear boundaries.,4,1101.0,2025-08-24T18:55:36.088009,business,medium,B
+Explain climate change causes and solutions comprehensively,A,"Brief, direct answer to your question.",2,665.0,2025-08-24T18:55:36.098454,social_issues,hard,B
+Explain climate change causes and solutions comprehensively,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",4,1165.0,2025-08-24T18:55:36.109138,social_issues,hard,B
+Provide detailed career advice for someone switching to tech,A,"Brief, direct answer to your question.",2,592.0000000000001,2025-08-24T18:55:36.120106,career,medium,B
+Provide detailed career advice for someone switching to tech,B,"This is a comprehensive, detailed response that thoroughly addresses your question with context and examples.",4,1492.0,2025-08-24T18:55:36.130550,career,medium,B

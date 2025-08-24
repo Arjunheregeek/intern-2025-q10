@@ -1,36 +1,34 @@
-import sys
+"""
+Main entry point for A/B Testing System for Prompt Optimization
+"""
+
 import os
+import sys
+import subprocess
 
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-
-from src.services.api_client import GeminiAPIClient
-from src.services.chatbot import CachedChatbot
-
-def main():
-    """Start the cached chatbot demo."""
+def run_evaluation():
+    """Run the A/B test evaluation"""
     try:
-        print("🚀 Starting Intelligent Cached Chatbot Demo")
+        src_path = os.path.join(os.path.dirname(__file__), 'src')
+        runner_path = os.path.join(src_path, 'ab_test_runner.py')
         
-        # Initialize API client
-        api_client = GeminiAPIClient()
-        
-        # Create cached chatbot
-        chatbot = CachedChatbot(api_client)
-        
-        # Run chatbot
-        chatbot.run()
-        
-    except ValueError as e:
-        print(f"❌ Configuration Error: {e}")
-        print("Please check your .env file and ensure GEMINI_API_KEY is set.")
-        sys.exit(1)
-    except KeyboardInterrupt:
-        print("\n\n👋 Goodbye!")
-        sys.exit(0)
+        if os.path.exists(runner_path):
+            result = subprocess.run([sys.executable, runner_path], 
+                                  cwd=src_path, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                print("Evaluation completed successfully!")
+                print(result.stdout)
+            else:
+                print("Evaluation failed:")
+                print(result.stderr)
+        else:
+            print(f"File not found: {runner_path}")
+            
     except Exception as e:
-        print(f"❌ An unexpected error occurred: {e}")
-        sys.exit(1)
+        print(f"Error running evaluation: {e}")
 
 if __name__ == "__main__":
-    main()
+    print("A/B Testing System for Prompt Optimization")
+    print("=" * 50)
+    run_evaluation()

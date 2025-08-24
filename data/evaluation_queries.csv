@@ -1,0 +1,11 @@
+query,category,expected_difficulty,favors_prompt
+"What is the capital of France?",factual,easy,A
+"Define machine learning in one sentence",technical,easy,A
+"Give me Python syntax for a for loop",programming,easy,A
+"List 3 benefits of exercise",health,easy,A
+"What time zone is New York in?",factual,easy,A
+"Explain quantum computing and its potential applications in detail",science,hard,B
+"Write a creative story about a time traveler who gets stuck",creative,medium,B
+"Analyze the pros and cons of remote work with examples",business,medium,B
+"Explain climate change causes and solutions comprehensively",social_issues,hard,B
+"Provide detailed career advice for someone switching to tech",career,medium,B
