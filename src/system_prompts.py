@@ -3,8 +3,9 @@ System prompts for A/B testing evaluation.
 Two distinct strategies: Concise vs Detailed responses.
 """
 
+
 class SystemPrompts:
-    
+
     PROMPT_A_CONCISE = """You are a helpful AI assistant focused on providing concise, direct answers.
 
 Guidelines:
@@ -33,9 +34,9 @@ Take time to fully explore the topic and provide valuable insights."""
     @staticmethod
     def get_prompt(version: str) -> str:
         """Get system prompt by version (A or B)"""
-        if version.upper() == 'A':
+        if version.upper() == "A":
             return SystemPrompts.PROMPT_A_CONCISE
-        elif version.upper() == 'B':
+        elif version.upper() == "B":
             return SystemPrompts.PROMPT_B_DETAILED
         else:
             raise ValueError(f"Invalid prompt version: {version}. Use 'A' or 'B'")
@@ -44,7 +45,7 @@ Take time to fully explore the topic and provide valuable insights."""
     def get_prompt_description(version: str) -> str:
         """Get description of prompt strategy"""
         descriptions = {
-            'A': "Concise, direct responses optimized for speed and clarity",
-            'B': "Detailed, conversational responses with context and examples"
+            "A": "Concise, direct responses optimized for speed and clarity",
+            "B": "Detailed, conversational responses with context and examples",
         }
         return descriptions.get(version.upper(), "Unknown version")
