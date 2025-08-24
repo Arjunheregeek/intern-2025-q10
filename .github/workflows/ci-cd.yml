@@ -30,6 +30,8 @@ jobs:
         pip install -r requirements-dev.txt
 
     - name: Run tests
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
         pytest src/tests -v --cov=src --cov-report=xml
 
