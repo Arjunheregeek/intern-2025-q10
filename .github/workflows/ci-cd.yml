@@ -29,6 +29,10 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
+    - name: Format code with black
+      run: |
+        black src/
+
     - name: Run tests
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
