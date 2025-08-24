@@ -1,0 +1,127 @@
+CHAT HISTORY EXPORT
+==================================================
+Export Date: 2025-08-24 20:46:01
+Total Conversations: 17
+AI Status: Real Gemini API
+
+--- Conversation 1 ---
+Session: 92616f58
+Time: 2025-08-24 15:15:56
+User: how can i reach there from delhi
+Bot: [SIMULATED] Hello! I'm your AI assistant. Please set up your GEMINI_API_KEY for real AI responses.
+Metrics: 22 tokens, 100.0ms
+
+--- Conversation 2 ---
+Session: 92616f58
+Time: 2025-08-24 15:15:44
+User: where is china
+Bot: China is a large country located in East Asia.  To be more specific, it borders several countries including North Korea, Vietnam, Laos, Myanmar, India, Bhutan, Nepal, Pakistan, Afghanistan, Tajikistan, Kyrgyzstan, Kazakhstan, Mongolia, and Russia.  It also includes the island province of Taiwan (the political status of which is disputed).  For a more precise location, you'll need to specify a city or region within China.
+Metrics: 67 tokens, 2741.6ms
+
+--- Conversation 3 ---
+Session: 95ed06d9
+Time: 2025-08-24 15:13:20
+User: status
+Bot: Please clarify what status you'd like.  To help me give you the most accurate information, tell me what you're checking the status of (e.g., "the order I placed," "my project," "the server," "my flight").
+Metrics: 35 tokens, 860.9ms
+
+--- Conversation 4 ---
+Session: 95ed06d9
+Time: 2025-08-24 15:13:11
+User: where is china
+Bot: China is a large country in East Asia.  To give you a more precise location, it's bordered by 14 countries:  North Korea, Vietnam, Laos, Myanmar, India, Bhutan, Nepal, Pakistan, Afghanistan, Tajikistan, Kyrgyzstan, Kazakhstan, Russia, and Mongolia.  It also borders several bodies of water, including the Pacific Ocean and the South China Sea.
+
+For a more specific location within China, you'll need to tell me what city or region you're interested in.
+Metrics: 74 tokens, 2665.7ms
+
+--- Conversation 5 ---
+Session: 661562bf
+Time: 2025-08-24 15:12:55
+User: where is china
+Bot: [SIMULATED] Hello! I'm your AI assistant. Please set up your GEMINI_API_KEY for real AI responses.
+Metrics: 18 tokens, 100.0ms
+
+--- Conversation 6 ---
+Session: 661562bf
+Time: 2025-08-24 15:10:49
+User: where is china
+Bot: [SIMULATED] Hello! I'm your AI assistant. Please set up your GEMINI_API_KEY for real AI responses.
+Metrics: 18 tokens, 100.0ms
+
+--- Conversation 7 ---
+Session: 9ba6565e
+Time: 2025-08-24 15:08:26
+User: where is china
+Bot: Sorry, I encountered an API error: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.. Please check your API key and internet connection.
+Metrics: 45 tokens, 684.2ms
+
+--- Conversation 8 ---
+Session: 3c1e0b4a
+Time: 2025-08-24 15:05:56
+User: heloo, where is china
+Bot: Sorry, I encountered an API error: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Metrics: 38 tokens, 768.3ms
+
+--- Conversation 9 ---
+Session: 63e10884
+Time: 2025-08-24 15:00:20
+User: yes
+Bot: That's an interesting question about 'yes'. While I don't have specific information on that exact topic, I'd be happy to help you explore related concepts or guide you to reliable sources. Could you provide more context about what specifically you'd like to know?
+Metrics: 44 tokens, 103.6ms
+
+--- Conversation 10 ---
+Session: 63e10884
+Time: 2025-08-24 15:00:06
+User: where is china
+Bot: Hello! I'm your AI assistant. I can help you with questions about technology, science, general knowledge, and more. What would you like to know?
+Metrics: 27 tokens, 101.2ms
+
+--- Conversation 11 ---
+Session: 63e10884
+Time: 2025-08-24 14:59:57
+User: what is china
+Bot: Hello! I'm your AI assistant. I can help you with questions about technology, science, general knowledge, and more. What would you like to know?
+Metrics: 27 tokens, 100.6ms
+
+--- Conversation 12 ---
+Session: 8dde1137
+Time: 2025-08-24 14:58:19
+User: where is china
+Bot: I understand you're asking about: where is china... Let me help you with that.
+Metrics: 17 tokens, 100.5ms
+
+--- Conversation 13 ---
+Session: 8dde1137
+Time: 2025-08-24 14:57:40
+User: what is langchain
+Bot: I understand you're asking about: what is langchain... Let me help you with that.
+Metrics: 17 tokens, 101.1ms
+
+--- Conversation 14 ---
+Session: 8dde1137
+Time: 2025-08-24 14:57:32
+User: hello
+Bot: Hello! How can I help you today?
+Metrics: 8 tokens, 104.9ms
+
+--- Conversation 15 ---
+Session: 71604c6c
+Time: 2025-08-24 14:52:55
+User: what is langchain
+Bot: I understand you're asking about: what is langchain... Let me help you with that.
+Metrics: 17 tokens, 100.9ms
+
+--- Conversation 16 ---
+Session: 71604c6c
+Time: 2025-08-24 14:48:19
+User: what is my faviorite color
+Bot: I understand you're asking about: what is my faviorite color... Let me help you with that.
+Metrics: 21 tokens, 100.6ms
+
+--- Conversation 17 ---
+Session: 71604c6c
+Time: 2025-08-24 14:47:44
+User: hello
+Bot: Hello! How can I help you today?
+Metrics: 8 tokens, 104.0ms
+
