@@ -1,3 +1,12 @@
+"""
+Memory manager for monitoring and optimizing memory usage.
+"""
+
+import gc
+import os
+import platform
+import time
+from typing import Dict, Any, Optional
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.schema import HumanMessage, AIMessage
 from typing import List, Dict, Any
@@ -87,3 +96,81 @@ class ConversationMemoryManager:
             "memory_window_size": self.memory.k,
             "is_memory_full": len(messages) >= (self.memory.k * 2)
         }
+
+class MemoryManager:
+    """Memory manager for monitoring and optimizing memory usage."""
+    
+    def __init__(self, threshold_mb: float = 100.0):
+        """Initialize memory manager with threshold."""
+        self.threshold_mb = threshold_mb
+        self.peak_memory_mb = 0.0
+        self.last_check_time = time.time()
+        self.gc_collections = 0
+    
+    def get_memory_usage(self) -> Dict[str, Any]:
+        """Get current memory usage statistics."""
+        try:
+            import psutil
+            process = psutil.Process(os.getpid())
+            memory_info = process.memory_info()
+            
+            # Convert to MB
+            current_mb = memory_info.rss / (1024 * 1024)
+            
+            # Update peak
+            if current_mb > self.peak_memory_mb:
+                self.peak_memory_mb = current_mb
+            
+            available_mb = psutil.virtual_memory().available / (1024 * 1024)
+            
+            return {
+                "current_mb": current_mb,
+                "peak_mb": self.peak_memory_mb,
+                "available_mb": available_mb,
+                "gc_collections": self.gc_collections,
+                "threshold_mb": self.threshold_mb
+            }
+        except ImportError:
+            # If psutil not available, provide basic info
+            return {
+                "current_mb": 0.0,
+                "peak_mb": self.peak_memory_mb,
+                "available_mb": 0.0,
+                "gc_collections": self.gc_collections,
+                "note": "Install psutil for accurate memory monitoring"
+            }
+    
+    def check_and_optimize(self, cache=None) -> bool:
+        """Check memory usage and optimize if needed."""
+        # Only check every 10 seconds to avoid overhead
+        now = time.time()
+        if now - self.last_check_time < 10:
+            return False
+        
+        self.last_check_time = now
+        
+        # Get memory usage
+        stats = self.get_memory_usage()
+        
+        # Check if above threshold
+        if stats["current_mb"] > self.threshold_mb:
+            return self.reduce_memory_usage(cache)
+        
+        return False
+    
+    def reduce_memory_usage(self, cache=None) -> bool:
+        """Reduce memory usage through garbage collection and cache cleanup."""
+        # Run garbage collection
+        collected = gc.collect()
+        self.gc_collections += 1
+        
+        # Clear cache if provided and still above threshold
+        if cache is not None:
+            stats_after_gc = self.get_memory_usage()
+            
+            if stats_after_gc["current_mb"] > self.threshold_mb:
+                # Clear half the cache
+                cache.clear_oldest(int(cache.get_stats()["cache_size"] / 2))
+                return True
+        
+        return collected > 0

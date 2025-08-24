@@ -1,291 +1,429 @@
-# Chat Persistence System with REST API
+# Intelligent Chat System with Advanced Features
 
-A comprehensive chat system with SQLite persistence, REST API, and real Gemini AI integration with enhanced security features including logging and data protection.
+A comprehensive chat system with SQLite persistence, intelligent LRU caching, rate limiting, memory management, REST API, and Google Gemini AI integration.
 
 ## Overview
 
-This system provides persistent storage for chat interactions with a REST API interface, real Google Gemini AI responses, comprehensive logging, and data security measures.
+This production-ready system combines multiple advanced features:
+- **Intelligent Caching**: LRU cache with TTL to reduce API calls
+- **Rate Limiting**: Prevent API abuse and manage quotas
+- **Memory Management**: Monitor and optimize memory usage
+- **Database Persistence**: SQLite with optimized schema and indexing
+- **REST API**: FastAPI with comprehensive endpoints
+- **Real AI**: Google Gemini integration with fallback responses
+- **Session Management**: Track and analyze conversation patterns
+
+## Quick Start
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Set up API key
+copy .env.example .env
+# Edit .env: GEMINI_API_KEY=your_key_here
+
+# 3. Start the intelligent chat system
+python main.py
+```
 
 ## Project Structure
 
 ```
 d:\Downloads\ASSIGN\
 ├── src/
-│   ├── database.py              # SQLite setup, models, operations
-│   ├── models.py               # Pydantic models for API
-│   ├── api.py                  # FastAPI application with endpoints
-│   └── chatbot.py              # Enhanced CLI with Gemini AI integration
-├── tests/
-│   └── test_api.py             # API endpoint tests
+│   ├── services/
+│   │   ├── chatbot.py         # Cached chatbot with all features
+│   │   ├── api_client.py      # Gemini API client
+│   │   ├── cache_manager.py   # LRU cache implementation
+│   │   ├── rate_limiter.py    # Rate limiter implementation
+│   │   └── memory_manager.py  # Memory manager implementation
+│   ├── database.py            # Database operations & models
+│   ├── models.py              # Pydantic API models
+│   └── api.py                 # FastAPI endpoints
 ├── data/
-│   └── chat_history.db         # SQLite database (generated)
+│   └── chat_history.db        # SQLite database (auto-generated)
 ├── logs/
-│   └── app.log                 # Application logs (generated)
-├── exports/                    # Chat history exports (generated)
-├── main.py                     # Combined CLI and API server launcher
-├── requirements.txt            # Dependencies
-├── .env.example               # API key template
-└── README.md                  # This file
+│   └── app.log               # Application logs (auto-generated)
+├── exports/                   # Chat exports (auto-generated)
+├── main.py                   # Unified entry point
+├── requirements.txt          # Dependencies
+└── README.md                # This file
 ```
 
-## Features
+## Core Features
 
-- **Real AI Integration**: Google Gemini API with free tier support (`gemini-1.5-flash`)
-- **Persistent Storage**: SQLite database with optimized schema
-- **REST API**: FastAPI with automatic documentation
-- **Security**: Input validation, SQL injection prevention, comprehensive logging
-- **Export Functionality**: Save chat history to readable text files
-- **Session Management**: Track and analyze conversation sessions
+### 🧠 Intelligent Caching
+- **LRU Cache**: 50 entries with 5-minute TTL
+- **Cache Hit Optimization**: Instant responses for repeated queries
+- **Smart Eviction**: Automatic cleanup of old entries
+- **Statistics**: Hit/miss ratios and performance metrics
 
-## Installation
+### ⚡ Rate Limiting
+- **API Protection**: Prevent abuse and quota exhaustion
+- **Configurable Limits**: 15 requests/minute, 100/hour
+- **Graceful Degradation**: Fallback responses when limited
+- **Quota Management**: Smart handling of free tier limits
 
+### 💾 Database Persistence
+- **SQLite Storage**: Optimized schema with indexing
+- **Session Tracking**: Conversation history and analytics
+- **Export Functionality**: Human-readable chat exports
+- **Statistics**: Usage metrics and performance data
+
+### 🛠️ Memory Management
+- **Automatic Optimization**: Monitors memory usage and clears cache when needed
+- **Garbage Collection**: Reduces memory footprint during high usage
+- **Statistics**: Tracks current, peak, and available memory
+
+### 🌐 REST API
+- **FastAPI Framework**: Auto-generated documentation
+- **Rate Limited Endpoints**: Protected API access
+- **Health Monitoring**: Service status and diagnostics
+- **Metrics Collection**: Performance and usage analytics
+
+## Usage Modes
+
+### 1. Interactive CLI (Primary)
 ```bash
-pip install -r requirements.txt
-```
-
-### Setup Real AI Integration (Required for AI Responses)
-
-1. **Get a Gemini API Key:**
-   - Visit: https://makersuite.google.com/app/apikey
-   - Sign in with your Google account
-   - Create a new API key (free tier available)
-
-2. **Configure the API Key:**
-   ```bash
-   # Create a .env file
-   copy .env.example .env
-   # Edit .env and add: GEMINI_API_KEY=your_actual_api_key_here
-   ```
-
-3. **Test the Integration:**
-   ```bash
-   python main.py
-   # You should see "Connected to Gemini API (Free Tier)"
-   ```
-
-**Without API Key:** The system works with simulated responses (marked as [SIMULATED])
-**With API Key:** You get real AI responses from Google's Gemini 1.5 Flash model
-
-## Usage
-
-### Start API Server
-```bash
-# Start FastAPI server
-python main.py --mode api
-
-# Access API documentation
-# http://localhost:8000/docs
-```
-
-### Run CLI Chat
-```bash
-# Start interactive chat
-python main.py --mode cli
-```
-
-### Default Mode
-```bash
-# Start CLI chat (default)
 python main.py
+# Features: Real-time chat with caching, rate limiting, memory management, and persistence
 ```
+
+### 2. API Server
+```bash
+python main.py --mode api
+# Access: http://localhost:8000/docs
+```
+
+## Chat Commands
+
+| Command   | Function                                      |
+|-----------|----------------------------------------------|
+| `cache`   | Show intelligent cache statistics            |
+| `clear`   | Clear cache and reset hit/miss ratios        |
+| `stats`   | Display session and database statistics      |
+| `export`  | Save complete chat history to file           |
+| `demo`    | Demonstrate cache behavior with duplicates   |
+| `memory`  | Show memory usage statistics                 |
+| `rate`    | Show rate limit status                       |
+| `quit`    | Exit with session summary                    |
 
 ## API Endpoints
 
-- `GET /history` - Get paginated chat history
-- `GET /history/{session_id}` - Get specific session history
-- `GET /stats` - Get usage statistics
-- `GET /health` - Health check endpoint
+| Endpoint           | Method | Features                                   |
+|--------------------|--------|-------------------------------------------|
+| `/chat`            | POST   | Send message, get AI response             |
+| `/history`         | GET    | Paginated chat history with rate limiting |
+| `/history/{id}`    | GET    | Retrieve specific session history         |
+| `/stats`           | GET    | Comprehensive usage statistics            |
+| `/health`          | GET    | Service health with dependency checks     |
 
-## Database Schema
+## Advanced Configuration
 
-```sql
-CREATE TABLE chat_history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    prompt TEXT NOT NULL,
-    response TEXT NOT NULL,
-    tokens_used INTEGER,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    session_id TEXT,
-    response_time_ms REAL
-);
-
-CREATE INDEX idx_timestamp ON chat_history(timestamp DESC);
-CREATE INDEX idx_session ON chat_history(session_id);
-```
-
-## Security Features
-
-- Input sanitization and validation
-- SQL injection prevention with prepared statements
-- Rate limiting for API endpoints
-- Comprehensive audit logging
-- Data encryption for sensitive fields
-
-## Logging
-
-- Application logs in `logs/app.log`
-- Request/response logging
-- Database operation logging
-- Error tracking and monitoring
-
-## Quick Start Guide
-
-### Step 1: Install Dependencies
+### Environment Variables
 ```bash
-# Make sure you're in the project directory
-cd d:\Downloads\ASSIGN
-
-# Install required packages
-pip install -r requirements.txt
+GEMINI_API_KEY=your_gemini_api_key
+DATABASE_URL=sqlite:///./data/chat_history.db
+LOG_LEVEL=INFO
+CACHE_SIZE=50
+CACHE_TTL=300
+RATE_LIMIT_PER_MINUTE=15
+RATE_LIMIT_PER_HOUR=100
 ```
 
-### Step 2: Choose Your Mode
+### Cache Configuration
+- **Size**: 50 entries (configurable)
+- **TTL**: 5 minutes (300 seconds)
+- **Eviction**: LRU (Least Recently Used)
+- **Key Generation**: SHA-256 hash of prompts
 
-#### Option A: Just Chat (Simplest)
+### Rate Limiting
+- **Free Tier Safe**: 15 requests/minute, 1,500/day
+- **Intelligent Backoff**: Automatic quota management
+- **Cache Integration**: Reduces API calls through caching
+- **Fallback Responses**: Graceful degradation when limited
+
+### Memory Management
+- **Threshold**: Clears cache when memory exceeds 100 MB
+- **Garbage Collection**: Runs automatically during high memory usage
+- **Statistics**: Tracks current, peak, and available memory
+
+## Performance Features
+
+### Cache Performance
+```
+Cache Hit Example:
+You: What is Python?
+🔄 [FRESH in 1247ms] - First request (API call)
+
+You: What is Python?
+⚡ [CACHED in 2ms] - Cached response (600x faster!)
+```
+
+### Database Optimization
+- **Indexed Queries**: Fast retrieval by timestamp and session
+- **Connection Pooling**: Efficient database connections
+- **Async Operations**: Non-blocking database calls
+- **Migration Support**: Schema updates and backwards compatibility
+
+## Production Deployment
+
+### Docker Support
 ```bash
-# Start the CLI chatbot - this is the easiest way to begin
-python main.py
+# Build optimized container
+docker build -t intelligent-chat .
 
-# Or explicitly specify CLI mode
-python main.py --mode cli
+# Run with environment variables
+docker run -d \
+  -p 8000:8000 \
+  -e GEMINI_API_KEY=your_key \
+  -v $(pwd)/data:/app/data \
+  intelligent-chat
 ```
-**What happens**: You get an interactive chat interface that saves all conversations to a database.
 
-#### Option B: Start API Server (For Web Access)
+### Monitoring & Analytics
+- **Real-time Metrics**: Cache hit rates, response times
+- **Usage Analytics**: Session patterns, popular queries
+- **Health Monitoring**: Database, API, and cache status
+- **Export Capabilities**: Complete conversation archives
+
+## Development
+
+### Running Tests
 ```bash
-# Start the REST API server
-python main.py --mode api
+# Install development dependencies
+pip install pytest pytest-asyncio
+
+# Run comprehensive tests
+pytest tests/ -v --cov=src
 ```
-**What happens**: 
-- Server starts at http://localhost:8000
-- You can view API documentation at http://localhost:8000/docs
-- You can make API calls to retrieve chat history
 
-### Step 3: Understanding the Workflow
-
-#### For CLI Chat:
-1. Run `python main.py`
-2. Type messages and get responses
-3. Type `stats` to see session statistics
-4. Type `quit` to exit
-5. All conversations are automatically saved to the database
-
-#### For API Server:
-1. Run `python main.py --mode api`
-2. Open browser to http://localhost:8000/docs
-3. Test endpoints:
-   - `/health` - Check if server is running
-   - `/history` - View all chat history
-   - `/stats` - See usage statistics
-4. Use these endpoints in your web applications
-
-### Step 4: Viewing Your Data
-
-#### Via CLI:
+### Code Quality
 ```bash
-# Start chat and type 'stats' to see your session data
-python main.py
-You: stats
-```
+# Format code
+black src/ --line-length 88
 
-#### Via API:
-```bash
-# Start API server
-python main.py --mode api
-
-# Then visit these URLs in your browser:
-# http://localhost:8000/health
-# http://localhost:8000/history
-# http://localhost:8000/stats
-```
-
-#### Direct Database Access:
-Your chat data is stored in `data/chat_history.db` which you can open with any SQLite browser.
-
-## Data Storage & Export
-
-### Where Your Data is Stored
-```
-d:\Downloads\ASSIGN\data\chat_history.db
-```
-This SQLite database file contains all your conversations, timestamps, token usage, and response times.
-
-### Export Your Conversations
-```bash
-# Start the chat and type 'export'
-python main.py
-You: export
-# Creates: exports/chat_history_YYYYMMDD_HHMMSS.txt
-```
-This creates a human-readable file in the `exports/` folder with all your chat history, including:
-- Conversation timestamps
-- User prompts and AI responses
-- Token usage and response time metrics
-- Session information
-
-### View Session Statistics
-```bash
-# In chat, type 'stats' to see:
-You: stats
-# Shows: interactions count, total tokens, average response time, AI status
-```
-
-## Common Use Cases
-
-### 1. Personal Chat Assistant
-```bash
-python main.py
-# Chat normally, all conversations are saved
-```
-
-### 2. Web Application Backend
-```bash
-python main.py --mode api
-# Use the API endpoints in your web/mobile app
-```
-
-### 3. Data Analysis
-```bash
-# Use the /stats endpoint or direct database access
-# to analyze chat patterns and usage
+# Lint code
+flake8 src/ --max-line-length 88
 ```
 
 ## Troubleshooting
 
-### "Module not found" errors
-```bash
-# Make sure you're in the right directory
-cd d:\Downloads\ASSIGN
+### Common Issues
 
-# Check if requirements are installed
-pip list | findstr fastapi
+**Cache Not Working**
+- Check memory usage and cache size limits
+- Verify TTL settings and expiration
+
+**Rate Limiting Errors**
+- Monitor API quota usage
+- Adjust rate limits in configuration
+- Check cache hit rates to reduce API calls
+
+**Database Issues**
+- Verify file permissions in `data/` directory
+- Check disk space for database growth
+- Review logs for connection errors
+
+### Performance Optimization
+
+**Improve Cache Hit Rate**
+- Increase cache size for more entries
+- Extend TTL for longer cache retention
+- Analyze query patterns for optimization
+
+**Reduce API Usage**
+- Enable aggressive caching
+- Implement query preprocessing
+- Use fallback responses for common queries
+
+## Architecture
+
+The system uses a layered architecture:
+
+1. **Presentation Layer**: CLI interface with rich formatting
+2. **Business Logic**: Intelligent caching, rate limiting, and memory management
+3. **Data Access**: Async database operations with pooling
+4. **External APIs**: Gemini integration with error handling
+5. **Infrastructure**: Logging, monitoring, and health checks
+
+## License
+
+MIT License - see LICENSE file for details.
+- **Smart Eviction**: Automatic cleanup of old entries
+- **Statistics**: Hit/miss ratios and performance metrics
+
+### 💾 Database Persistence
+- **SQLite Storage**: Optimized schema with indexing
+- **Session Tracking**: Conversation history and analytics
+- **Export Functionality**: Human-readable chat exports
+- **Statistics**: Usage metrics and performance data
+
+### 🌐 REST API
+- **FastAPI Framework**: Auto-generated documentation
+- **Rate Limited Endpoints**: Protected API access
+- **Health Monitoring**: Service status and diagnostics
+- **Metrics Collection**: Performance and usage analytics
+
+## Usage Modes
+
+### 1. Interactive CLI (Primary)
+```bash
+python main.py
+# Features: Real-time chat with caching, rate limiting, and persistence
 ```
 
-### Gemini API Issues
+### 2. API Server
+```bash
+python main.py --mode api
+# Access: http://localhost:8000/docs
+```
 
-**"models/gemini-pro is not found" Error:**
-- Fixed: The system now uses `gemini-1.5-flash` (correct free tier model)
+## Chat Commands
 
-**Free Tier Limits:**
-- 15 requests per minute
-- 1,500 requests per day
-- If exceeded, wait until next day or upgrade to paid plan
-- Check usage at: https://makersuite.google.com/app/apikey
+| Command | Function |
+|---------|----------|
+| `cache` | Show intelligent cache statistics |
+| `clear` | Clear cache and reset hit/miss ratios |
+| `stats` | Display session and database statistics |
+| `export` | Save complete chat history to file |
+| `demo` | Demonstrate cache behavior with duplicates |
+| `quit` | Exit with session summary |
 
-**API Key Setup:**
-1. Visit: https://makersuite.google.com/app/apikey
-2. Create new API key
-3. Add to `.env` file: `GEMINI_API_KEY=your_key_here`
-4. Restart application
+## API Endpoints
 
-**Real vs Simulated Responses:**
-- Real: Shows `[REAL AI in XXXms]` before responses
-- Simulated: Shows `[SIMULATED]` in response text
+| Endpoint | Method | Features |
+|----------|--------|----------|
+| `/history` | GET | Paginated chat history with rate limiting |
+| `/history/{session_id}` | GET | Session-specific conversation data |
+| `/stats` | GET | Comprehensive usage statistics |
+| `/health` | GET | Service health with dependency checks |
 
-### Database issues
-- The `data/` folder and database are created automatically
-- Logs are stored in `logs/app.log` for debugging
+## Advanced Configuration
 
-### Port already in use
-- The API server uses port 8000 by default
-- If occupied, you'll see an error message
+### Environment Variables
+```bash
+GEMINI_API_KEY=your_gemini_api_key
+DATABASE_URL=sqlite:///./data/chat_history.db
+LOG_LEVEL=INFO
+CACHE_SIZE=50
+CACHE_TTL=300
+RATE_LIMIT_PER_MINUTE=15
+RATE_LIMIT_PER_HOUR=100
+```
+
+### Cache Configuration
+- **Size**: 50 entries (configurable)
+- **TTL**: 5 minutes (300 seconds)
+- **Eviction**: LRU (Least Recently Used)
+- **Key Generation**: SHA-256 hash of prompts
+
+### Rate Limiting
+- **Free Tier Safe**: 15 requests/minute, 1,500/day
+- **Intelligent Backoff**: Automatic quota management
+- **Cache Integration**: Reduces API calls through caching
+- **Fallback Responses**: Graceful degradation when limited
+
+## Performance Features
+
+### Cache Performance
+```
+Cache Hit Example:
+You: What is Python?
+🔄 [FRESH in 1247ms] - First request (API call)
+
+You: What is Python?
+⚡ [CACHED in 2ms] - Cached response (600x faster!)
+```
+
+### Database Optimization
+- **Indexed Queries**: Fast retrieval by timestamp and session
+- **Connection Pooling**: Efficient database connections
+- **Async Operations**: Non-blocking database calls
+- **Migration Support**: Schema updates and backwards compatibility
+
+## Production Deployment
+
+### Docker Support
+```bash
+# Build optimized container
+docker build -t intelligent-chat .
+
+# Run with environment variables
+docker run -d \
+  -p 8000:8000 \
+  -e GEMINI_API_KEY=your_key \
+  -v $(pwd)/data:/app/data \
+  intelligent-chat
+```
+
+### Monitoring & Analytics
+- **Real-time Metrics**: Cache hit rates, response times
+- **Usage Analytics**: Session patterns, popular queries
+- **Health Monitoring**: Database, API, and cache status
+- **Export Capabilities**: Complete conversation archives
+
+## Development
+
+### Running Tests
+```bash
+# Install development dependencies
+pip install pytest pytest-asyncio
+
+# Run comprehensive tests
+pytest tests/ -v --cov=src
+```
+
+### Code Quality
+```bash
+# Format code
+black src/ --line-length 88
+
+# Lint code
+flake8 src/ --max-line-length 88
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Cache Not Working**
+- Check memory usage and cache size limits
+- Verify TTL settings and expiration
+
+**Rate Limiting Errors**
+- Monitor API quota usage
+- Adjust rate limits in configuration
+- Check cache hit rates to reduce API calls
+
+**Database Issues**
+- Verify file permissions in `data/` directory
+- Check disk space for database growth
+- Review logs for connection errors
+
+### Performance Optimization
+
+**Improve Cache Hit Rate**
+- Increase cache size for more entries
+- Extend TTL for longer cache retention
+- Analyze query patterns for optimization
+
+**Reduce API Usage**
+- Enable aggressive caching
+- Implement query preprocessing
+- Use fallback responses for common queries
+
+## Architecture
+
+The system uses a layered architecture:
+
+1. **Presentation Layer**: CLI interface with rich formatting
+2. **Business Logic**: Intelligent caching and rate limiting
+3. **Data Access**: Async database operations with pooling
+4. **External APIs**: Gemini integration with error handling
+5. **Infrastructure**: Logging, monitoring, and health checks
+
+## License
+
+MIT License - see LICENSE file for details.

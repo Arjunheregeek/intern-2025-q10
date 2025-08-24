@@ -1,10 +1,28 @@
-requests==2.31.0
-python-dotenv==1.0.0
-structlog==23.2.0
-pytest==7.4.0
-cachetools==5.3.2
-pytest-mock==3.11.1
+# Core Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
 pydantic>=2.4.0
+pydantic-settings>=2.0.0
+
+# Database
+aiosqlite>=0.19.0
+sqlalchemy>=2.0.0
+
+# AI Integration
+google-generativeai>=0.3.0
+
+# Utilities
+python-dotenv>=1.0.0
+python-multipart>=0.0.6
+
+# Rate Limiting
+slowapi>=0.1.8
+redis>=4.5.0
+
+# Development
+structlog>=23.1.0
+
+# Data Science
 langchain==0.1.20
 langchain-core==0.1.52
 pandas>=1.5.0
@@ -14,8 +32,3 @@ numpy>=1.24.0
 scipy>=1.10.0
 jupyter>=1.0.0
 notebook>=6.5.0
-fastapi>=0.104.0
-uvicorn>=0.24.0
-aiosqlite>=0.19.0
-python-multipart>=0.0.6
-google-generativeai>=0.3.0
