@@ -1,14 +1,14 @@
-# CLI Chatbot with Token Bucket Rate Limiting
+# CLI Chatbot with Intelligent LRU Caching
 
-An interactive command-line chatbot with token bucket rate limiting that enforces 10 requests per minute to prevent API abuse and manage costs.
+An interactive command-line chatbot with intelligent caching using LRU (Least Recently Used) algorithm and TTL (Time To Live) to reduce duplicate LLM API calls and improve response times.
 
 ## Features
 
-- 🪣 **Token Bucket Rate Limiting**: 10 requests per minute with automatic token refill
-- 💬 **Interactive CLI**: Continuous conversation loop with real-time token status
-- ⚠️ **Rate Limit Enforcement**: HTTP 429-style blocking when limits exceeded
-- 📊 **Status Monitoring**: Real-time bucket status and token availability
-- 🛠️ **Demo Commands**: Built-in commands to test rate limiting behavior
+- 🧠 **LRU Cache with TTL**: 50 entries maximum, 5-minute expiration
+- ⚡ **Performance Optimization**: Instant responses for cached prompts
+- 📊 **Cache Analytics**: Hit/miss ratios, time savings, performance metrics
+- 🔄 **Automatic Cleanup**: Expired entry removal and memory management
+- 💾 **Smart Key Generation**: Hash-based keys for consistent caching
 
 ## License
 
@@ -36,109 +36,140 @@ python main.py
 | Command | Description |
 |---------|-------------|
 | `quit` or `exit` | End the conversation |
-| `status` | Show rate limit and token bucket status |
-| `rapid` | Demo rapid requests to trigger rate limiting |
+| `cache` | Show detailed cache statistics |
+| `clear` | Clear all cached entries |
+| `demo` | Demonstrate cache behavior with duplicate prompts |
 
 ## Example Session
 
 ```
-🤖 RATE LIMITED CHATBOT
+🤖 INTELLIGENT CACHED CHATBOT
 ============================================================
-Rate limit: 10 messages per minute
+Features: LRU Cache (50 entries) + 5-minute TTL
 
-[Tokens: 10] You: Hello!
-🤖 AI: Hello! How can I help you today?
+[Cache: 0/50] You: What is Python?
+🔄 [FRESH in 1247.3ms] 
+🤖 AI: Python is a high-level programming language...
 
-[Tokens: 9] You: status
-📊 Rate Limit Status:
-  • Remaining requests: 9
-  • Limit per minute: 10
-  • Next token in: 0.0s
-  • Request allowed: ✅ Yes
-  • Bucket tokens: 9.0/10
-  • Refill rate: 10.0 tokens/min
+[Cache: 1/50] You: What is Python?
+⚡ [CACHED in 2.1ms] 
+🤖 AI: Python is a high-level programming language...
 
-[Tokens: 9] You: rapid
-🚀 Rapid Request Demo (testing rate limits)...
-
-Request 1: ✅ Allowed
-Request 2: ✅ Allowed  
-Request 3: ✅ Allowed
-Request 4: ❌ Rate limited (wait 2.1s)
-Request 5: ❌ Rate limited (wait 1.6s)
+[Cache: 1/50] You: cache
+📊 Cache Statistics:
+  • Cache hits: 1
+  • Cache misses: 1
+  • Hit rate: 50.0%
+  • Cache size: 1/50
+  • Time saved: 1.2s total
+  • Avg time saved per hit: 1247.3ms
 ```
 
-## Token Bucket Algorithm
+## Caching Strategy
 
-### Configuration
-- **Bucket Capacity**: 10 tokens
-- **Refill Rate**: 10 tokens per 60 seconds (1 token every 6 seconds)
-- **Request Cost**: 1 token per chat message
-- **Thread Safety**: Uses threading.Lock() for concurrent access
+### LRU Algorithm with TTL
+- **Cache Size**: 50 entries maximum
+- **TTL**: 5 minutes (300 seconds)
+- **Eviction**: Least Recently Used entries removed when full
+- **Key Generation**: SHA-256 hash of prompt + parameters
 
-### Rate Limiting Behavior
-1. **Full Bucket**: Starts with 10/10 tokens available
-2. **Token Consumption**: Each message consumes 1 token
-3. **Automatic Refill**: Tokens refill at steady rate (10/minute)
-4. **Rate Limiting**: Blocks requests when bucket is empty
-5. **Recovery**: Automatic recovery as tokens refill
+### Performance Benefits
+1. **Instant Responses**: Cached prompts return in ~2ms vs ~1200ms fresh
+2. **API Cost Reduction**: Eliminates duplicate API calls
+3. **Bandwidth Savings**: Reduces network requests
+4. **User Experience**: Faster responses for repeated queries
+
+## Cache Implementation
+
+### Key Generation
+```python
+def get_cache_key(self, prompt: str, **kwargs) -> str:
+    # SHA-256 hash of prompt + sorted parameters
+    cache_data = f"{prompt}|{sorted_params}"
+    return hashlib.sha256(cache_data.encode()).hexdigest()[:16]
+```
+
+### Cache Entry Structure
+```python
+{
+    "response": "LLM response text",
+    "cached_at": 1640995200.0,
+    "original_latency_ms": 1247.3,
+    "cache_key": "a1b2c3d4e5f6g7h8"
+}
+```
 
 ## Architecture
 
 ```
 src/
 ├── services/
-│   ├── rate_limiter.py      # Token bucket implementation
-│   ├── chatbot.py          # Rate limited CLI interface
-│   └── api_client.py       # Gemini API client
+│   ├── cache_manager.py    # LRU cache with TTL implementation
+│   ├── chatbot.py         # Cached chatbot interface
+│   └── api_client.py      # Gemini API client
 tests/
-├── test_rate_limiter.py    # Rate limiting tests
-main.py                     # Entry point
+├── test_cache.py          # Cache functionality tests
+main.py                    # Entry point
 ```
+
+## Performance Metrics
+
+### Cache Statistics
+- **Hit Rate**: Percentage of requests served from cache
+- **Response Time**: Fresh vs cached comparison
+- **Memory Usage**: Current cache size and capacity
+- **Time Savings**: Total milliseconds saved by caching
+
+### Cache States
+| State | Description | Behavior |
+|-------|-------------|----------|
+| **Empty** | 0/50 entries | All requests fresh, building cache |
+| **Building** | 1-49/50 | Mix of fresh and cached responses |
+| **Full** | 50/50 | LRU eviction on new unique prompts |
+| **Expired** | TTL exceeded | Automatic cleanup on access |
 
 ## Testing
 
 ```bash
-# Run rate limiting tests
-pytest tests/test_rate_limiter.py -v
+# Run cache tests
+pytest tests/test_cache.py -v
 
-# Test concurrent access
-pytest tests/test_rate_limiter.py::TestTokenBucket::test_concurrent_access -v
+# Test TTL expiration
+pytest tests/test_cache.py::TestLLMCache::test_ttl_expiration -v
+
+# Test LRU eviction
+pytest tests/test_cache.py::TestLLMCache::test_lru_eviction -v
 ```
 
-## Rate Limiting States
+## Cache Demo
 
-| State | Token Count | Behavior |
-|-------|-------------|----------|
-| **Full** | 10/10 | All requests allowed |
-| **Partial** | 1-9/10 | Requests allowed, showing countdown |
-| **Empty** | 0/10 | Requests blocked with wait time |
-| **Refilling** | Increasing | Automatic token recovery |
+The `demo` command shows caching in action:
+
+```bash
+[Cache: 0/50] You: demo
+
+🚀 Cache Demo - Testing duplicate prompts...
+
+--- Demo Request 1: 'What is Python?' ---
+🔄 [FRESH in 1247.3ms] 
+Response: Python is a high-level programming language...
+
+--- Demo Request 2: 'Tell me about AI' ---
+🔄 [FRESH in 1156.7ms] 
+Response: AI (Artificial Intelligence) refers to...
+
+--- Demo Request 3: 'What is Python?' ---
+⚡ [CACHED in 2.1ms] 
+Response: Python is a high-level programming language...
+
+📊 Cache Statistics:
+  • Hit rate: 33.3%
+  • Time saved: 1.2s total
+```
 
 ## Error Handling
 
-- **Rate Limit Exceeded**: Clear error message with wait time
-- **API Failures**: Error displayed, tokens not consumed
-- **Invalid Commands**: Helpful command suggestions
-- **Graceful Exit**: Ctrl+C handling with usage statistics
-
-## Implementation Details
-
-### Token Bucket Class
-```python
-class TokenBucket:
-    def __init__(self, capacity=10, refill_rate=10/60):
-        # Thread-safe token bucket with configurable limits
-    
-    def consume(self, tokens=1) -> bool:
-        # Returns True if tokens available, False if rate limited
-    
-    def get_status(self) -> dict:
-        # Returns current tokens, capacity, next_refill_time
-```
-
-### Rate Limiter Integration
-- Checks token availability before API calls
-- Displays remaining tokens in chat prompt
-- Automatic retry suggestions when rate limited
-- Real-time status updates
+- **Cache Failures**: Graceful fallback to fresh API calls
+- **TTL Expiration**: Automatic refresh of stale entries
+- **Memory Management**: LRU eviction prevents memory overflow
+- **Thread Safety**: Concurrent access protection with locks

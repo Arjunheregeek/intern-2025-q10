@@ -5,18 +5,18 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from src.services.api_client import GeminiAPIClient
-from src.services.chatbot import RateLimitedChatbot
+from src.services.chatbot import CachedChatbot
 
 def main():
-    """Start the rate limited chatbot demo."""
+    """Start the cached chatbot demo."""
     try:
-        print("🚀 Starting Rate Limited Chatbot Demo")
+        print("🚀 Starting Intelligent Cached Chatbot Demo")
         
         # Initialize API client
         api_client = GeminiAPIClient()
         
-        # Create rate limited chatbot (10 requests per minute)
-        chatbot = RateLimitedChatbot(api_client, requests_per_minute=10)
+        # Create cached chatbot
+        chatbot = CachedChatbot(api_client)
         
         # Run chatbot
         chatbot.run()
