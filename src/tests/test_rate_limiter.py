@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
 from src.services.rate_limiter import RateLimiter
@@ -32,5 +32,22 @@ def test_allow_requests_after_time_window(rate_limiter, monkeypatch):
     import time
     for _ in range(5):
         rate_limiter.allow_request()
-    monkeypatch.setattr(time, "time", lambda: time.time() + 61)  # Simulate time passage
+    original_time = time.time
+    monkeypatch.setattr(time, "time", lambda: original_time() + 61)  # Use original_time to avoid recursion
     assert rate_limiter.allow_request() is True
+
+def test_rate_limiter_statistics(rate_limiter):
+    """Test that the rate limiter statistics are accurate."""
+    for _ in range(3):
+        rate_limiter.allow_request()
+    stats = rate_limiter.get_stats()
+    assert stats["requests_current_minute"] == 3
+    assert stats["requests_current_hour"] == 3
+
+def test_rate_limiter_throttling(rate_limiter):
+    """Test that the throttling count increases when requests are denied."""
+    for _ in range(5):
+        rate_limiter.allow_request()
+    rate_limiter.allow_request()  # This request should be denied
+    stats = rate_limiter.get_stats()
+    assert stats["throttled_count"] == 1

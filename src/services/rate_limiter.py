@@ -3,8 +3,7 @@ Rate limiter for API protection and quota management.
 """
 
 import time
-from datetime import datetime, timedelta
-from typing import Dict, Any, Tuple
+from typing import Dict, Any
 import threading
 
 class RateLimiter:
@@ -14,8 +13,8 @@ class RateLimiter:
         """Initialize rate limiter with limits."""
         self.minute_limit = minute_limit
         self.hour_limit = hour_limit
-        self.minute_requests = []
-        self.hour_requests = []
+        self.minute_requests = []  # Store timestamps as floats
+        self.hour_requests = []    # Store timestamps as floats
         self.throttled_count = 0
         self.cache_hits = 0
         self.lock = threading.Lock()
@@ -23,23 +22,23 @@ class RateLimiter:
     def allow_request(self) -> bool:
         """Check if request is allowed based on rate limits."""
         with self.lock:
-            now = datetime.now()
-            
+            now = time.time()
+
             # Clean old requests
             self.minute_requests = [t for t in self.minute_requests 
-                                 if now - t < timedelta(minutes=1)]
+                                 if now - t < 60]  # 60 seconds in a minute
             self.hour_requests = [t for t in self.hour_requests 
-                               if now - t < timedelta(hours=1)]
-            
+                               if now - t < 3600]  # 3600 seconds in an hour
+
             # Check limits
             if len(self.minute_requests) >= self.minute_limit:
                 self.throttled_count += 1
                 return False
-            
+
             if len(self.hour_requests) >= self.hour_limit:
                 self.throttled_count += 1
                 return False
-            
+
             # Record request
             self.minute_requests.append(now)
             self.hour_requests.append(now)
@@ -58,14 +57,14 @@ class RateLimiter:
     def get_stats(self) -> Dict[str, Any]:
         """Get rate limiting statistics."""
         with self.lock:
-            now = datetime.now()
-            
+            now = time.time()
+
             # Clean old requests
             self.minute_requests = [t for t in self.minute_requests 
-                                 if now - t < timedelta(minutes=1)]
+                                 if now - t < 60]
             self.hour_requests = [t for t in self.hour_requests 
-                               if now - t < timedelta(hours=1)]
-            
+                               if now - t < 3600]
+
             return {
                 "requests_current_minute": len(self.minute_requests),
                 "requests_current_hour": len(self.hour_requests),
