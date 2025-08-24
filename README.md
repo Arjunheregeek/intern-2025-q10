@@ -1,14 +1,14 @@
-# CLI Chatbot with Conversation Memory
+# CLI Chatbot with Token Bucket Rate Limiting
 
-An interactive command-line chatbot powered by LangChain's ConversationBufferWindowMemory that remembers the last 4 conversation turns for contextual responses.
+An interactive command-line chatbot with token bucket rate limiting that enforces 10 requests per minute to prevent API abuse and manage costs.
 
 ## Features
 
-- 🧠 **Conversation Memory**: Remembers last 4 turns using LangChain
-- 💬 **Interactive CLI**: Continuous conversation loop with commands
-- 🔄 **Context Awareness**: Maintains context between messages
-- 📊 **Memory Management**: Automatic sliding window and buffer status
-- 🛠️ **Commands**: Built-in commands for history, status, and clearing
+- 🪣 **Token Bucket Rate Limiting**: 10 requests per minute with automatic token refill
+- 💬 **Interactive CLI**: Continuous conversation loop with real-time token status
+- ⚠️ **Rate Limit Enforcement**: HTTP 429-style blocking when limits exceeded
+- 📊 **Status Monitoring**: Real-time bucket status and token availability
+- 🛠️ **Demo Commands**: Built-in commands to test rate limiting behavior
 
 ## License
 
@@ -36,87 +36,109 @@ python main.py
 | Command | Description |
 |---------|-------------|
 | `quit` or `exit` | End the conversation |
-| `clear` | Clear conversation history |
-| `history` | Show conversation history |
-| `status` | Show memory buffer status |
+| `status` | Show rate limit and token bucket status |
+| `rapid` | Demo rapid requests to trigger rate limiting |
 
-## Example Conversation
+## Example Session
 
 ```
-🤖 AI CHATBOT WITH MEMORY
+🤖 RATE LIMITED CHATBOT
 ============================================================
-I can remember our last 4 conversation turns!
+Rate limit: 10 messages per minute
 
-[Turn 1] You: Hi, my name is Alice
-🤖 AI: Hello Alice! Nice to meet you. How can I help you today?
+[Tokens: 10] You: Hello!
+🤖 AI: Hello! How can I help you today?
 
-[Turn 2] You: What's my name?
-🤖 AI: Your name is Alice, as you mentioned when we started talking.
+[Tokens: 9] You: status
+📊 Rate Limit Status:
+  • Remaining requests: 9
+  • Limit per minute: 10
+  • Next token in: 0.0s
+  • Request allowed: ✅ Yes
+  • Bucket tokens: 9.0/10
+  • Refill rate: 10.0 tokens/min
 
-[Turn 3] You: Tell me about AI
-🤖 AI: AI, or Artificial Intelligence, refers to systems that can perform tasks typically requiring human intelligence...
+[Tokens: 9] You: rapid
+🚀 Rapid Request Demo (testing rate limits)...
 
-[Turn 4] You: status
-📊 Memory Status:
-  • Current turn: 3
-  • Messages in buffer: 6
-  • Conversation turns: 3
-  • Memory window: 4 turns
-  • Buffer full: No
+Request 1: ✅ Allowed
+Request 2: ✅ Allowed  
+Request 3: ✅ Allowed
+Request 4: ❌ Rate limited (wait 2.1s)
+Request 5: ❌ Rate limited (wait 1.6s)
 ```
 
-## Memory Management
+## Token Bucket Algorithm
 
-### Sliding Window
-- Keeps exactly **4 conversation turns** (8 messages total)
-- Automatically removes oldest messages when buffer is full
-- Maintains conversation continuity within the window
+### Configuration
+- **Bucket Capacity**: 10 tokens
+- **Refill Rate**: 10 tokens per 60 seconds (1 token every 6 seconds)
+- **Request Cost**: 1 token per chat message
+- **Thread Safety**: Uses threading.Lock() for concurrent access
 
-### Context Building
-```python
-# Example context passed to LLM:
-User: Hi, my name is Alice
-Assistant: Hello Alice! Nice to meet you.
-User: What's my name?
-Assistant: Your name is Alice.
-User: Tell me about AI
-```
+### Rate Limiting Behavior
+1. **Full Bucket**: Starts with 10/10 tokens available
+2. **Token Consumption**: Each message consumes 1 token
+3. **Automatic Refill**: Tokens refill at steady rate (10/minute)
+4. **Rate Limiting**: Blocks requests when bucket is empty
+5. **Recovery**: Automatic recovery as tokens refill
 
 ## Architecture
 
 ```
 src/
 ├── services/
-│   ├── chatbot.py           # Main CLI interface
-│   ├── memory_manager.py    # LangChain memory integration
-│   └── api_client.py        # Gemini API client
+│   ├── rate_limiter.py      # Token bucket implementation
+│   ├── chatbot.py          # Rate limited CLI interface
+│   └── api_client.py       # Gemini API client
 tests/
-├── test_memory.py           # Memory functionality tests
-main.py                      # Entry point
+├── test_rate_limiter.py    # Rate limiting tests
+main.py                     # Entry point
 ```
 
 ## Testing
 
 ```bash
-# Run memory tests
-pytest tests/test_memory.py -v
+# Run rate limiting tests
+pytest tests/test_rate_limiter.py -v
 
-# Run all tests
-pytest tests/ -v
+# Test concurrent access
+pytest tests/test_rate_limiter.py::TestTokenBucket::test_concurrent_access -v
 ```
+
+## Rate Limiting States
+
+| State | Token Count | Behavior |
+|-------|-------------|----------|
+| **Full** | 10/10 | All requests allowed |
+| **Partial** | 1-9/10 | Requests allowed, showing countdown |
+| **Empty** | 0/10 | Requests blocked with wait time |
+| **Refilling** | Increasing | Automatic token recovery |
 
 ## Error Handling
 
-- **API Failures**: Continues conversation after errors
-- **Invalid Commands**: Helpful error messages
-- **Memory Overflow**: Automatic pruning of old messages
-- **Graceful Exit**: Ctrl+C handling
+- **Rate Limit Exceeded**: Clear error message with wait time
+- **API Failures**: Error displayed, tokens not consumed
+- **Invalid Commands**: Helpful command suggestions
+- **Graceful Exit**: Ctrl+C handling with usage statistics
 
-## Memory Buffer States
+## Implementation Details
 
-| State | Description | Buffer Size |
-|-------|-------------|-------------|
-| Empty | No messages | 0/8 messages |
-| Partial | Some messages | 1-7/8 messages |
-| Full | Buffer at capacity | 8/8 messages |
-| Sliding | Removing old, adding new | Always 8/8 |
+### Token Bucket Class
+```python
+class TokenBucket:
+    def __init__(self, capacity=10, refill_rate=10/60):
+        # Thread-safe token bucket with configurable limits
+    
+    def consume(self, tokens=1) -> bool:
+        # Returns True if tokens available, False if rate limited
+    
+    def get_status(self) -> dict:
+        # Returns current tokens, capacity, next_refill_time
+```
+
+### Rate Limiter Integration
+- Checks token availability before API calls
+- Displays remaining tokens in chat prompt
+- Automatic retry suggestions when rate limited
+- Real-time status updates
