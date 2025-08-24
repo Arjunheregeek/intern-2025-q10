@@ -32,7 +32,7 @@ jobs:
       run: |
         pytest src/tests/ -v
       env:
-        GEMINI_API_KEY: ${{env.GEMINI_API_KEY }}
+        GEMINI_API_KEY: dummy_key_value
 
   build-and-push:
     needs: test
