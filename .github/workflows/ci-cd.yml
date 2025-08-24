@@ -30,7 +30,7 @@ jobs:
     
     - name: Run tests
       run: |
-        pytest tests/ -v
+        pytest src/tests/ -v
       env:
         GOOGLE_API_KEY: ${{env.GOOGLE_API_KEY }}
 
