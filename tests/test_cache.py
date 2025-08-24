@@ -5,7 +5,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src'))
 
-from src.services.cache_manager import LLMCache
+from src.services.cache_manager import LLMCache  # Ensure this import matches your project structure
 
 class TestLLMCache:
     """Test LLM cache functionality."""

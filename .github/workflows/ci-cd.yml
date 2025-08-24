@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  PYTHONPATH: ${{ github.workspace }}/src  # Add src to PYTHONPATH
 
 jobs:
   test:
@@ -31,7 +32,7 @@ jobs:
     
     - name: Run tests
       run: |
-        pytest tests/ -v --cov=app --cov-report=xml
+        pytest tests/ -v --cov=src --cov-report=xml
     
     - name: Code quality checks
       run: |

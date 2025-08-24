@@ -5,7 +5,7 @@ API endpoint tests for chat persistence system.
 import pytest
 import asyncio
 from fastapi.testclient import TestClient
-from src.api import app
+from src.api import app  # Ensure this import matches your project structure
 from src.database import db_manager
 
 client = TestClient(app)
